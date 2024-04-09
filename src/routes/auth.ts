@@ -61,7 +61,15 @@ const login = async (req: Request, res: Response) => {
 
     const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    return res.json({ user, token });
+    res.set('Set-Cookie', cookie.serialize('token', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production', // ! as we work on http not on https
+      maxAge: 3600,
+      path: '/'
+    }));
+
+    return res.json(user.toJSON());
 
   } catch (error) {
     console.log(error);
@@ -73,8 +81,14 @@ const me = async (req: Request, res: Response) => {
   return res.json(res.locals.user);
 }
 
-// INFO: Most likely, this isn't needed.
 const logout = async (_: Request, res: Response) => {
+  res.set('Set-Cookie', cookie.serialize('token', '', {
+    httpOnly: true,
+    sameSite: 'strict',
+    expires: new Date(0),
+    path: '/'
+  }));
+
   return res.status(200).json({ success: true })
 }
 
@@ -82,7 +96,7 @@ const logout = async (_: Request, res: Response) => {
 const router = Router();
 router.post('/register', register);
 router.post('/login', login);
-router.get('/me', auth, me);
+router.get('/me', auth, me); // an example of auth middleware
 router.get('/logout', auth, logout);
 
 export default router;

@@ -6,7 +6,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   const ERROR_MESSAGE = 'Unauthenticated';
 
   try {
-    const token = req.headers.authorization?.split(' ')?.pop();
+    const token = req.cookies.token;
     if (!token) throw new Error(ERROR_MESSAGE)
 
     const { username }: any = jwt.verify(token, process.env.JWT_SECRET)

@@ -1,3 +1,4 @@
 curl -X POST http://localhost:3333/api/auth/login       \
+   --verbose                                            \
    -H "Content-Type: application/json"                  \
-   -d '{"username": "Oleh5", "password": "password" }'
+   -d '{"username": "Oleh9", "password": "password" }'
